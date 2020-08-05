@@ -15,29 +15,25 @@ microless = {
 }
 chrome_options = Options()
 chrome_options.add_argument('-headless')
+chrome_options.add_argument('-disable-gpu')
 driver = webdriver.Chrome(chrome_options=chrome_options)
-while True:
+driver.get('https://mechanicalkeyboards.com/shop/index.php?l=product_detail&p=5461&mkref=yzyfe1u')
+assert "Ducky" in driver.title
+keyswitch = Select(driver.find_element_by_name('option[1998]'))
+keyswitch.select_by_visible_text('Cherry MX Brown')
+element = driver.find_element_by_id('ebj_available')
+if element.text != 'Pre-Order Only':
+    requests.post(webhook, json.dumps(mechkey))
+    break
+else:
+    print('nah mate')
 
-
-    driver.get('https://mechanicalkeyboards.com/shop/index.php?l=product_detail&p=5461&mkref=yzyfe1u')
-    assert "Ducky" in driver.title
-    keyswitch = Select(driver.find_element_by_name('option[1998]'))
-    keyswitch.select_by_visible_text('Cherry MX Brown')
-    element = driver.find_element_by_id('ebj_available')
-    if element.text != 'Pre-Order Only':
-        requests.post(webhook, json.dumps(mechkey))
-        break
-    else:
-        print('test complete')
-
-    driver.get('https://uae.microless.com/product/ducky-one-2-sf-65-cherry-blue-rgb-switch-type-c-usb-rgb-backlit-pbt-double-shot-black-keycaps-black-top-case-white-bottom-case-rgb-led-dkon1967st-buspdazt1/')
-    assert "Ducky" in driver.title
-    try:
-        element = driver.find_element_by_class_name('instock-lable')
-    except NoSuchElementException:
-        pass
-    else:
-        requests.post(webhook, json.dumps(microless))
-        break
-
-    time.sleep(3600)
+driver.get('https://uae.microless.com/product/ducky-one-2-sf-65-cherry-blue-rgb-switch-type-c-usb-rgb-backlit-pbt-double-shot-black-keycaps-black-top-case-white-bottom-case-rgb-led-dkon1967st-buspdazt1/')
+assert "Ducky" in driver.title
+try:
+    element = driver.find_element_by_class_name('instock-lable')
+except NoSuchElementException:
+    pass
+else:
+    requests.post(webhook, json.dumps(microless))
+    break
